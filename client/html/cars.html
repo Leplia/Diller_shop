@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/client/assets/css/main.css">
+    <link rel="stylesheet" href="/client/assets/css/cars.css">
+    
+    <title>Каталог автомобилей | MaxWheels</title>
+</head>
+<body>
+    <header class="header">
+        <div id="menu-btn" class="fas fa-bars"></div>
+        <a href="/client/html/main.html" class="logo"> <span>max</span>wheels </a>
+        
+        <nav class="navbar">
+            <a href="/client/html/main.html#home">Главная</a>
+            <a href="/client/html/cars.html">Автомобили</a>
+            <a href="/client/html/main.html#services">Сервисы</a>
+            <a href="/client/html/main.html#featured">Новые</a>
+            <a href="/client/html/main.html#reviews">Отзывы</a>
+            <a href="/client/html/main.html#contact">Контакты</a>
+        </nav>
+        
+        <div id="login-btn">
+            <button id="login-button" class="btn">Войти</button>
+            <i class="far fa-user"></i>
+        </div>
+        
+        <div id="user-info" style="display: none;">
+        </div>
+    </header>
+
+    <section class="catalog-header">
+        <h1 class="heading">Каталог <span>автомобилей</span></h1>
+        <p>Найдите автомобиль своей мечты среди нашего обширного выбора</p>
+    </section>
+
+    <section class="catalog-container">
+        <div class="filters-sidebar">
+            <div class="filter-group">
+                <h3>Поиск</h3>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Марка, модель...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3>Цена</h3>
+                <div class="price-range">
+                    <div class="range-inputs">
+                        <input type="number" id="min-price" placeholder="Мин">
+                        <span>-</span>
+                        <input type="number" id="max-price" placeholder="Макс">
+                    </div>
+                    <div class="range-slider">
+                        <input type="range" id="price-slider" min="0" max="200000" value="200000">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3>Марка</h3>
+                <div class="brand-filters">
+                    <label><input type="checkbox" value="Toyota"> Toyota</label>
+                    <label><input type="checkbox" value="BMW"> BMW</label>
+                    <label><input type="checkbox" value="Mercedes"> Mercedes</label>
+                    <label><input type="checkbox" value="Audi"> Audi</label>
+                    <label><input type="checkbox" value="Honda"> Honda</label>
+                    <label><input type="checkbox" value="Ford"> Ford</label>
+                    <label><input type="checkbox" value="Nissan"> Nissan</label>
+                    <label><input type="checkbox" value="Volkswagen"> Volkswagen</label>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3>Год выпуска</h3>
+                <div class="year-range">
+                    <div class="range-inputs">
+                        <input type="number" id="min-year" placeholder="Мин" min="1990" max="2023">
+                        <span>-</span>
+                        <input type="number" id="max-year" placeholder="Макс" min="1990" max="2023">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3>Тип кузова</h3>
+                <div class="body-type-filters">
+                    <label><input type="checkbox" value="Седан"> Седан</label>
+                    <label><input type="checkbox" value="Хэтчбек"> Хэтчбек</label>
+                    <label><input type="checkbox" value="Универсал"> Универсал</label>
+                    <label><input type="checkbox" value="Внедорожник"> Внедорожник</label>
+                    <label><input type="checkbox" value="Купе"> Купе</label>
+                    <label><input type="checkbox" value="Кабриолет"> Кабриолет</label>
+                </div>
+            </div>
+            
+            <button id="reset-filters" class="btn">Сбросить фильтры</button>
+        </div>
+        
+        <div class="catalog-main">
+            <div class="catalog-controls">
+                <div class="sort-options">
+                    <label for="sort-select">Сортировка:</label>
+                    <select id="sort-select">
+                        <option value="default">По умолчанию</option>
+                        <option value="price-asc">Цена: по возрастанию</option>
+                        <option value="price-desc">Цена: по убыванию</option>
+                        <option value="year-desc">Год: новые сначала</option>
+                        <option value="year-asc">Год: старые сначала</option>
+                        <option value="brand-asc">Марка: А-Я</option>
+                        <option value="brand-desc">Марка: Я-А</option>
+                    </select>
+                </div>
+                
+                <div class="view-options">
+                    <button id="grid-view" class="view-btn active"><i class="fas fa-th"></i></button>
+                    <button id="list-view" class="view-btn"><i class="fas fa-list"></i></button>
+                </div>
+            </div>
+            
+            <div class="results-info">
+                <p id="results-count">Найдено автомобилей: <span>0</span></p>
+            </div>
+            
+            <div class="cars-grid" id="cars-container">
+                <!-- Автомобили будут загружены через JavaScript -->
+            </div>
+            
+            <div class="pagination" id="pagination">
+                <!-- Пагинация будет создана через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <section class="footer" id="footer">
+        <div class="box-container">
+            <div class="box">
+                <h3>Наши филиалы</h3>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Индия </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Япония </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Франция </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Россия </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> США </a>
+            </div>
+            
+            <div class="box">
+                <h3>Быстрые ссылки</h3>
+                <a href="/client/html/main.html#home"> <i class="fas fa-arrow-right"></i> Главная </a>
+                <a href="/client/html/cars.html"> <i class="fas fa-arrow-right"></i> Автомобили </a>
+                <a href="/client/html/main.html#services"> <i class="fas fa-arrow-right"></i> Сервисы </a>
+                <a href="/client/html/main.html#featured"> <i class="fas fa-arrow-right"></i> Новые </a>
+                <a href="/client/html/main.html#reviews"> <i class="fas fa-arrow-right"></i> Отзывы </a>
+                <a href="/client/html/main.html#contact"> <i class="fas fa-arrow-right"></i> Контакты </a>
+            </div>
+            
+            <div class="box">
+                <h3>Контактная информация</h3>
+                <a href="#"> <i class="fas fa-phone"></i> +123-456-7890 </a>
+                <a href="#"> <i class="fas fa-phone"></i> +111-222-3333 </a>
+                <a href="#"> <i class="fas fa-envelope"></i> info@maxwheels.com </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Москва, Россия </a>
+            </div>
+            
+            <div class="box">
+                <h3>Социальные сети</h3>
+                <a href="#"> <i class="fab fa-facebook-f"></i> facebook </a>
+                <a href="#"> <i class="fab fa-twitter"></i> twitter </a>
+                <a href="#"> <i class="fab fa-instagram"></i> instagram </a>
+                <a href="#"> <i class="fab fa-linkedin"></i> linkedin </a>
+                <a href="#"> <i class="fab fa-pinterest"></i> pinterest </a>
+            </div>
+        </div>
+        
+    </section>
+
+    <script src="https://unpkg.com/swiper@7/swiper-bundle.min.js"></script>
+    <script src="../js/views/cars.js" type="module"></script>
+</body>
+</html>

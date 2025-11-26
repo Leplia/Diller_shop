@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/client/assets/css/main.css" />
+  <link rel="stylesheet" href="/client/assets/css/manager-dashboard.css" />
+  <title>Панель менеджера</title>
+</head>
+<body>
+  <header class="header">
+    <a href="/client/html/main.html" class="logo"><span>max</span>wheels</a>
+    <nav class="navbar">
+      <a href="/client/html/main.html">Главная</a>
+      <a href="/client/html/cars.html">Каталог</a>
+    </nav>
+    <div class="admin-header-right">
+      <span class="admin-badge">Панель менеджера</span>
+      <div id="user-info"></div>
+    </div>
+  </header>
+
+  <section class="dashboard" id="manager-dashboard">
+    <h1 class="heading">Панель <span>менеджера</span></h1>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <h2>Каталог автомобилей</h2>
+
+        <form id="car-form" class="car-form">
+          <div class="car-form-row">
+            <div class="field">
+              <label for="car-brand">Марка</label>
+              <input id="car-brand" type="text" placeholder="Toyota" required />
+            </div>
+            <div class="field">
+              <label for="car-model">Модель</label>
+              <input id="car-model" type="text" placeholder="Camry" required />
+            </div>
+            <div class="field">
+              <label for="car-year">Год</label>
+              <input id="car-year" type="number" placeholder="2020" min="1990" max="2100" required />
+            </div>
+            <div class="field">
+              <label for="car-price">Цена, $</label>
+              <input id="car-price" type="number" placeholder="25000" min="0" required />
+            </div>
+          </div>
+
+          <div class="car-form-row">
+            <div class="field">
+              <label for="car-dealer">Дилер</label>
+              <select id="car-dealer" required>
+                <option value="">Выберите дилера</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="car-type">Тип кузова</label>
+              <select id="car-type" required>
+                <option value="">Выберите тип</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="car-form-row">
+            <div class="field" style="flex: 1 1 100%;">
+              <label for="car-image-url">URL изображения</label>
+              <input id="car-image-url" type="url" placeholder="https://example.com/image.jpg" />
+            </div>
+            <div class="field" style="flex: 1 1 100%;">
+              <label for="car-image-description">Описание изображения</label>
+              <input id="car-image-description" type="text" placeholder="Описание фото (если фото не загрузится)" />
+            </div>
+          </div>
+
+          <div class="car-form-row">
+            <div class="field buttons">
+              <button type="submit" id="save-car-btn" class="btn">Сохранить</button>
+              <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Отмена</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="card-subtitle" id="car-form-mode">Режим: добавление нового автомобиля</div>
+
+        <table class="table" id="cars-table">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Фото</th>
+            <th>Марка</th>
+            <th>Модель</th>
+            <th>Год</th>
+            <th>Цена</th>
+            <th>Действия</th>
+          </tr>
+          </thead>
+          <tbody>
+          <!-- строки будут добавлены скриптом -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Вопросы пользователей</h2>
+        <div id="questions-list">
+          <!-- вопросы / обращения пользователей (заглушка) -->
+          <p>Функционал обработки вопросов пользователей будет подключен к соответствующему API.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Футер сайта</h2>
+        <form id="footer-form" class="footer-form">
+          <label>
+            Текст копирайта
+            <input type="text" id="footer-credit" />
+          </label>
+          <label>
+            Контактный email
+            <input type="email" id="footer-email" />
+          </label>
+          <button type="submit" class="btn">Сохранить изменения</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <script src="/client/js/views/manager-dashboard.js" type="module"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" href="/client/assets/css/main.css">
+
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div id="menu-btn" class="fas fa-bars"></div>
+
+        <a href="#" class="logo"> <span>max</span>wheels </a>
+
+        <nav class="navbar">
+            <a href="#home">Главная</a>
+            <a href="cars.html">Автомобили</a>
+            <a href="#services">Сервисы</a>
+            <a href="#featured">Новые</a>
+            <a href="#reviews">Отзывы</a>
+            <a href="#contact">Контакты</a>
+        </nav>
+
+        <div id="login-btn">
+            <button id="login-button" class="btn">Войти</button>
+            <i class="far fa-user"></i>
+        </div>
+
+        <div id="user-info"></div>
+
+    </header>
+
+
+    <section class="home" id="home">
+
+        <h3 data-speed="-2" class="home-parallax">ВЫБЕРИ МАШИНУ ДЛЯ СЕБЯ</h3>
+
+        <img data-speed="5" class="home-parallax" src="/client/assets/img/home-img.png" alt="">
+
+        <a data-speed="7" href="cars.html" class="btn home-parallax">Каталог автомобилей</a>
+
+    </section>
+
+    <section class="icons-container">
+
+        <div class="icons">
+            <i class="fas fa-home"></i>
+            <div class="content">
+                <h3>150+</h3>
+                <p>филиалов</p>
+            </div>
+        </div>
+
+        <div class="icons">
+            <i class="fas fa-car"></i>
+            <div class="content">
+                <h3>4770+</h3>
+                <p>продано машин</p>
+            </div>
+        </div>
+
+        <div class="icons">
+            <i class="fas fa-users"></i>
+            <div class="content">
+                <h3>320+</h3>
+                <p>довольных клиентов</p>
+            </div>
+        </div>
+
+        <div class="icons">
+            <i class="fas fa-car"></i>
+            <div class="content">
+                <h3>1500+</h3>
+                <p>новых автомобилей</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="vehicles" id="vehicles">
+
+        <h1 class="heading"> Популярные <span>автомобили</span> </h1>
+
+        <div class="swiper vehicles-slider">
+
+            <div class="swiper-wrapper" id="popular-cars-container">
+                <!-- Популярные автомобили будут загружены через JavaScript -->
+            </div>
+
+            <div class="swiper-pagination"></div>
+
+        </div>
+
+    </section>
+
+    <section class="services" id="services">
+
+        <h1 class="heading"> Наши <span>услуги</span> </h1>
+
+        <div class="box-container">
+
+            <div class="box">
+                <i class="fas fa-car"></i>
+                <h3>Продажа авто</h3>
+                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis, nisi.</p>
+                <a href="#" class="btn"> Подробнее</a>
+            </div>
+
+            <div class="box">
+                <i class="fas fa-tools"></i>
+                <h3>Ремонт запчастей</h3>
+                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis, nisi.</p>
+                <a href="#" class="btn"> Подробнее</a>
+            </div>
+
+            <div class="box">
+                <i class="fas fa-car-crash"></i>
+                <h3>Страхование авто</h3>
+                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis, nisi.</p>
+                <a href="#" class="btn"> Подробнее</a>
+            </div>
+
+            <div class="box">
+                <i class="fas fa-car-battery"></i>
+                <h3>Замена аккумулятора</h3>
+                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis, nisi.</p>
+                <a href="#" class="btn"> Подробнее</a>
+            </div>
+
+            <div class="box">
+                <i class="fas fa-gas-pump"></i>
+                <h3>Замена масла</h3>
+                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis, nisi.</p>
+                <a href="#" class="btn"> Подробнее</a>
+            </div>
+
+            <div class="box">
+                <i class="fas fa-headset"></i>
+                <h3>Поддержка 24/7</h3>
+                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis, nisi.</p>
+                <a href="#" class="btn"> Подробнее</a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="featured" id="featured">
+
+        <h1 class="heading"> <span>Новые</span> автомобили </h1>
+
+        <div class="swiper featured-slider featured-slider-top">
+
+            <div class="swiper-wrapper" id="new-cars-container-top">
+                <!-- Первые 4 новых автомобиля будут загружены через JavaScript -->
+            </div>
+
+            <div class="swiper-pagination"></div>
+
+        </div>
+
+        <div class="swiper featured-slider featured-slider-bottom">
+
+            <div class="swiper-wrapper" id="new-cars-container-bottom">
+                <!-- Следующие 4 новых автомобиля будут загружены через JavaScript -->
+            </div>
+
+            <div class="swiper-pagination"></div>
+
+        </div>
+
+    </section>
+
+    <section class="newsletter">
+
+        <h3>Подпишитесь на последние обновления</h3>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum, suscipit.</p>
+
+        <form action="">
+            <input type="email" placeholder="введите ваш email">
+            <input type="submit" value="подписаться">
+        </form>
+
+    </section>
+
+    <section class="reviews" id="reviews">
+
+        <h1 class="heading"> Отзывы <span>клиентов</span> </h1>
+
+        <div class="swiper review-slider">
+
+            <div class="swiper-wrapper" id="reviews-container">
+                <!-- Отзывы будут загружены через JavaScript -->
+            </div>
+
+            <div class="swiper-pagination"></div>
+
+        </div>
+
+    </section>
+
+    <section class="contact" id="contact">
+
+        <h1 class="heading"><span>Свяжитесь</span> с нами</h1>
+
+        <div class="row">
+
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7904.395124754886!2d27.591509377568038!3d53.91414062431565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcfaef3e9a681%3A0x7c878f9c75770041!2z0JHQk9Cj0JjQoCwg0LrQvtGA0L_Rg9GBIOKEliA1!5e0!3m2!1sru!2sby!4v1759697149293!5m2!1sru!2sby"
+                width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+            <form id="contact-form">
+                <h3>Связаться с нами</h3>
+                <input type="text" id="contact-theme" placeholder="тема" class="box" required>
+                <textarea id="contact-message" placeholder="ваше сообщение" class="box" cols="30" rows="10" required></textarea>
+                <input type="submit" value="отправить сообщение" class="btn">
+                <button type="button" id="show-my-questions-btn" class="btn btn-secondary" style="display: none;">Последние вопросы</button>
+            </form>
+
+        </div>
+
+    </section>
+
+    <section class="footer" id="footer">
+
+        <div class="box-container">
+
+            <div class="box">
+                <h3>Наши филиалы</h3>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Индия </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Япония </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Франция </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Россия </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> США </a>
+            </div>
+
+            <div class="box">
+                <h3>Быстрые ссылки</h3>
+                <a href="#"> <i class="fas fa-arrow-right"></i> Главная </a>
+                <a href="#"> <i class="fas fa-arrow-right"></i> Автомобили </a>
+                <a href="#"> <i class="fas fa-arrow-right"></i> Сервисы </a>
+                <a href="#"> <i class="fas fa-arrow-right"></i> Новые </a>
+                <a href="#"> <i class="fas fa-arrow-right"></i> Отзывы </a>
+                <a href="#"> <i class="fas fa-arrow-right"></i> Контакты </a>
+            </div>
+
+            <div class="box">
+                <h3>Контактная информация</h3>
+                <a href="#"> <i class="fas fa-phone"></i> +123-456-7890 </a>
+                <a href="#"> <i class="fas fa-phone"></i> +111-222-3333 </a>
+                <a href="#"> <i class="fas fa-envelope"></i> info@maxwheels.com </a>
+                <a href="#"> <i class="fas fa-map-marker-alt"></i> Москва, Россия </a>
+            </div>
+
+            <div class="box">
+                <h3>Социальные сети</h3>
+                <a href="#"> <i class="fab fa-facebook-f"></i> facebook </a>
+                <a href="#"> <i class="fab fa-twitter"></i> twitter </a>
+                <a href="#"> <i class="fab fa-instagram"></i> instagram </a>
+                <a href="#"> <i class="fab fa-linkedin"></i> linkedin </a>
+                <a href="#"> <i class="fab fa-pinterest"></i> pinterest </a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Модальное окно для последних вопросов -->
+    <div id="my-questions-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Мои вопросы</h2>
+            <div id="my-questions-list" class="questions-list">
+                <!-- Вопросы будут загружены через JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Выпадающее меню пользователя -->
+    <div id="user-menu" class="user-menu">
+        <div class="user-menu-header">
+            <div class="user-menu-avatar">
+                <img src="/client/assets/img/default.png" alt="Аватар" />
+            </div>
+            <div class="user-menu-info">
+                <div class="user-menu-name" id="user-menu-name"></div>
+                <div class="user-menu-email" id="user-menu-email"></div>
+            </div>
+        </div>
+        <div class="user-menu-body">
+            <button class="user-menu-item" id="edit-name-btn">
+                <i class="fas fa-user-edit"></i>
+                <span>Изменить имя</span>
+            </button>
+            <button class="user-menu-item" id="edit-password-btn">
+                <i class="fas fa-key"></i>
+                <span>Изменить пароль</span>
+            </button>
+            <div class="user-menu-divider"></div>
+            <button class="user-menu-item user-menu-item-danger" id="menu-logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Выйти</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для изменения имени -->
+    <div id="edit-name-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Изменить имя</h2>
+            <form id="edit-name-form">
+                <input type="text" id="new-name-input" placeholder="Новое имя" class="box" required>
+                <button type="submit" class="btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно для изменения пароля -->
+    <div id="edit-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Изменить пароль</h2>
+            <form id="edit-password-form">
+                <input type="password" id="current-password-input" placeholder="Текущий пароль" class="box" required>
+                <input type="password" id="new-password-input" placeholder="Новый пароль" class="box" required>
+                <input type="password" id="confirm-password-input" placeholder="Подтвердите новый пароль" class="box" required>
+                <button type="submit" class="btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper@7/swiper-bundle.min.js"></script>
+
+    <script src="/client/js/views/main.js" type="module"></script>
+
+</body>
+
+</html>

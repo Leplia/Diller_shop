@@ -1,0 +1,161 @@
+-- Создание базы данных
+CREATE DATABASE IF NOT EXISTS dealer_car_shop;
+USE dealer_car_shop;
+
+-- Таблица ролей
+CREATE TABLE roles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO roles (name) VALUES 
+('admin'),
+('manager'),
+('customer');
+
+-- Таблица пользователей
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role_id INT,
+  FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+INSERT INTO users (name, email, password, role_id) VALUES 
+('Alice Admin', 'alice@admin.com', 'hashedpassword1', 1),
+('Bob Manager', 'bob@dealer.com', 'hashedpassword2', 2),
+('Charlie Customer', 'charlie@client.com', 'hashedpassword3', 3);
+
+-- Таблица компаний-дилеров
+CREATE TABLE dealers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  address TEXT,
+  phone VARCHAR(20),
+  email VARCHAR(100)
+);
+
+INSERT INTO dealers (name, address, phone, email) VALUES 
+('Lamborghini', 'Italy, Sant\'Agata Bolognese', '+390512345678', 'info@lamborghini.com'),
+('Porsche', 'Germany, Stuttgart', '+497112345678', 'info@porsche.com'),
+('Geely', 'China, Hangzhou', '+865712345678', 'info@geely.com');
+
+-- Таблица типов машин
+CREATE TABLE vehicle_types (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  type_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO vehicle_types (type_name) VALUES 
+('Sedan'),
+('SUV'),
+('Coupe'),
+('Convertible');
+
+-- Таблица машин
+CREATE TABLE cars (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  brand VARCHAR(50) NOT NULL,
+  model VARCHAR(50) NOT NULL,
+  year INT NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  dealer_id INT,
+  type_id INT,
+  FOREIGN KEY (dealer_id) REFERENCES dealers(id),
+  FOREIGN KEY (type_id) REFERENCES vehicle_types(id)
+);
+
+INSERT INTO cars (brand, model, year, price, dealer_id, type_id) VALUES 
+('Lamborghini', 'Huracan', 2023, 250000.00, 1, 3),
+('Porsche', 'Cayenne', 2022, 90000.00, 2, 2),
+('Geely', 'Emgrand', 2023, 15000.00, 3, 1);
+
+-- Таблица статусов заказов
+CREATE TABLE order_statuses (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  status_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO order_statuses (status_name) VALUES 
+('pending'),
+('confirmed'),
+('shipped'),
+('delivered'),
+('cancelled');
+
+-- Таблица заказов
+CREATE TABLE orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  car_id INT,
+  order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  status_id INT,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (car_id) REFERENCES cars(id),
+  FOREIGN KEY (status_id) REFERENCES order_statuses(id)
+);
+
+INSERT INTO orders (user_id, car_id, status_id) VALUES 
+(3, 1, 1),
+(3, 2, 2);
+
+-- Таблица отзывов
+CREATE TABLE reviews (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  car_id INT,
+  rating INT CHECK (rating BETWEEN 1 AND 5),
+  comment TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (car_id) REFERENCES cars(id)
+);
+
+INSERT INTO reviews (user_id, car_id, rating, comment) VALUES 
+(3, 1, 5, 'Amazing performance and design!'),
+(3, 2, 4, 'Comfortable and powerful SUV.');
+
+-- Таблица изображений машин
+CREATE TABLE images (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  car_id INT,
+  image_url VARCHAR(255) NOT NULL,
+  description TEXT,
+  FOREIGN KEY (car_id) REFERENCES cars(id)
+);
+
+INSERT INTO images (car_id, image_url, description) VALUES 
+(1, 'https://example.com/huracan.jpg', 'Lamborghini Huracan front view'),
+(2, 'https://example.com/cayenne.jpg', 'Porsche Cayenne side profile');
+
+-- Таблица тест-драйвов
+CREATE TABLE test_drives (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  car_id INT,
+  scheduled_date DATETIME NOT NULL,
+  status ENUM('pending', 'confirmed', 'completed', 'cancelled') DEFAULT 'pending',
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (car_id) REFERENCES cars(id)
+);
+
+INSERT INTO test_drives (user_id, car_id, scheduled_date, status) VALUES 
+(3, 1, '2025-10-10 14:00:00', 'confirmed'),
+(3, 3, '2025-10-12 11:00:00', 'pending');
+
+-- Таблица платежей
+CREATE TABLE payments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT,
+  amount DECIMAL(10,2) NOT NULL,
+  payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  method ENUM('card', 'cash', 'bank_transfer') NOT NULL,
+  status ENUM('pending', 'paid', 'failed') DEFAULT 'pending',
+  FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+INSERT INTO payments (order_id, amount, method, status) VALUES 
+(1, 250000.00, 'card', 'paid'),
+(2, 90000.00, 'bank_transfer', 'pending');
