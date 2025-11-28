@@ -111,18 +111,90 @@
       </div>
 
       <div class="card">
-        <h2>Футер сайта</h2>
-        <form id="footer-form" class="footer-form">
-          <label>
-            Текст копирайта
-            <input type="text" id="footer-credit" />
-          </label>
-          <label>
-            Контактный email
-            <input type="email" id="footer-email" />
-          </label>
-          <button type="submit" class="btn">Сохранить изменения</button>
+        <h2>Заявки</h2>
+        <div id="orders-list">
+          <!-- Заявки будут загружены через JavaScript -->
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Тест-драйвы</h2>
+        <div id="test-drives-list">
+          <!-- Тест-драйвы будут загружены через JavaScript -->
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Управление дилерами</h2>
+        <form id="dealer-form" class="entity-form">
+          <div class="form-row">
+            <div class="field">
+              <label for="dealer-name">Название</label>
+              <input id="dealer-name" type="text" placeholder="Название дилера" required />
+            </div>
+            <div class="field">
+              <label for="dealer-address">Адрес</label>
+              <input id="dealer-address" type="text" placeholder="Адрес" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="dealer-phone">Телефон</label>
+              <input id="dealer-phone" type="text" placeholder="Телефон" />
+            </div>
+            <div class="field">
+              <label for="dealer-email">Email</label>
+              <input id="dealer-email" type="email" placeholder="Email" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field buttons">
+              <button type="submit" class="btn">Добавить дилера</button>
+            </div>
+          </div>
         </form>
+        <table class="table" id="dealers-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Название</th>
+              <th>Адрес</th>
+              <th>Телефон</th>
+              <th>Email</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- строки будут добавлены скриптом -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Управление типами кузова</h2>
+        <form id="vehicle-type-form" class="entity-form">
+          <div class="form-row">
+            <div class="field">
+              <label for="vehicle-type-name">Название типа</label>
+              <input id="vehicle-type-name" type="text" placeholder="Например: Sedan" required />
+            </div>
+            <div class="field buttons">
+              <button type="submit" class="btn">Добавить тип</button>
+            </div>
+          </div>
+        </form>
+        <table class="table" id="vehicle-types-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Название</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- строки будут добавлены скриптом -->
+          </tbody>
+        </table>
       </div>
     </div>
   </section>

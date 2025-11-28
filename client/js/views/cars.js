@@ -183,10 +183,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById('search-input');
     const minPriceInput = document.getElementById('min-price');
     const maxPriceInput = document.getElementById('max-price');
+    const priceSlider = document.getElementById('price-slider');
+    const sliderValue = document.getElementById('slider-value');
     const minYearInput = document.getElementById('min-year');
     const maxYearInput = document.getElementById('max-year');
-    const brandFilters = document.querySelectorAll('.brand-filters input[type="checkbox"]');
-    const bodyTypeFilters = document.querySelectorAll('.body-type-filters input[type="checkbox"]');
+    const dealerFiltersContainer = document.getElementById('dealer-filters');
+    const bodyTypeFiltersContainer = document.getElementById('body-type-filters');
     const sortSelect = document.getElementById('sort-select');
     const resetFiltersBtn = document.getElementById('reset-filters');
     const gridViewBtn = document.getElementById('grid-view');
@@ -196,17 +198,23 @@ document.addEventListener("DOMContentLoaded", function () {
     
     let allCars = [];
     let filteredCars = [];
+    let dealers = [];
+    let vehicleTypes = [];
     let currentPage = 1;
     const carsPerPage = 9;
     let currentView = 'grid';
+    let maxPrice = 500000;
 
     // Инициализация
-    function init() {
+    async function init() {
         console.log('🚀 Инициализация каталога');
         checkAuthStatus();
         updateAuthUI();
+        await loadDealers();
+        await loadVehicleTypes();
         setupEventListeners();
-        loadCars();
+        await loadCars();
+        updatePriceSlider();
     }
 
     // Настройка обработчиков событий
@@ -224,17 +232,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Поиск и фильтры
         searchInput.addEventListener('input', debounce(applyFilters, 300));
-        minPriceInput.addEventListener('input', applyFilters);
-        maxPriceInput.addEventListener('input', applyFilters);
+        minPriceInput.addEventListener('input', () => {
+            if (priceSlider) {
+                priceSlider.value = maxPriceInput.value || maxPrice;
+                updateSliderValue();
+            }
+            applyFilters();
+        });
+        maxPriceInput.addEventListener('input', () => {
+            if (priceSlider) {
+                priceSlider.value = maxPriceInput.value || maxPrice;
+                updateSliderValue();
+            }
+            applyFilters();
+        });
+        
+        if (priceSlider) {
+            priceSlider.addEventListener('input', () => {
+                maxPriceInput.value = priceSlider.value;
+                updateSliderValue();
+                applyFilters();
+            });
+        }
+        
         minYearInput.addEventListener('input', applyFilters);
         maxYearInput.addEventListener('input', applyFilters);
         
-        brandFilters.forEach(checkbox => {
-            checkbox.addEventListener('change', applyFilters);
+        // Динамические фильтры для дилеров и типов кузова
+        dealerFiltersContainer.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                applyFilters();
+            }
         });
         
-        bodyTypeFilters.forEach(checkbox => {
-            checkbox.addEventListener('change', applyFilters);
+        bodyTypeFiltersContainer.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                applyFilters();
+            }
         });
         
         sortSelect.addEventListener('change', applyFilters);
@@ -273,6 +307,60 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 
+    // Загрузка дилеров
+    async function loadDealers() {
+        try {
+            const response = await fetch('http://localhost:4200/api/dealers');
+            if (!response.ok) throw new Error('Ошибка загрузки дилеров');
+            dealers = await response.json();
+            
+            dealerFiltersContainer.innerHTML = dealers.map(dealer => 
+                `<label><input type="checkbox" value="${dealer.id}" data-name="${dealer.name}"> ${dealer.name}</label>`
+            ).join('');
+            
+            console.log('✅ Дилеры загружены:', dealers.length, 'шт.');
+        } catch (error) {
+            console.error('❌ Ошибка загрузки дилеров:', error);
+        }
+    }
+
+    // Загрузка типов кузова
+    async function loadVehicleTypes() {
+        try {
+            const response = await fetch('http://localhost:4200/api/vehicle-types');
+            if (!response.ok) throw new Error('Ошибка загрузки типов кузова');
+            vehicleTypes = await response.json();
+            
+            bodyTypeFiltersContainer.innerHTML = vehicleTypes.map(type => 
+                `<label><input type="checkbox" value="${type.type_name}"> ${type.type_name}</label>`
+            ).join('');
+            
+            console.log('✅ Типы кузова загружены:', vehicleTypes.length, 'шт.');
+        } catch (error) {
+            console.error('❌ Ошибка загрузки типов кузова:', error);
+        }
+    }
+
+    // Обновление ползунка цены
+    function updatePriceSlider() {
+        if (allCars.length > 0) {
+            maxPrice = Math.max(...allCars.map(car => car.price));
+            maxPrice = Math.ceil(maxPrice / 10000) * 10000; // Округляем до 10000
+            if (priceSlider) {
+                priceSlider.max = maxPrice;
+                priceSlider.value = maxPrice;
+                maxPriceInput.max = maxPrice;
+                updateSliderValue();
+            }
+        }
+    }
+
+    function updateSliderValue() {
+        if (sliderValue && priceSlider) {
+            sliderValue.textContent = `До ${parseInt(priceSlider.value).toLocaleString('ru-RU')} $`;
+        }
+    }
+
     // Загрузка автомобилей
     async function loadCars() {
         try {
@@ -295,6 +383,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 type: carData.type || carData.vehicle_type || carData.type_name || 'Седан'
             }));
             filteredCars = [...allCars];
+            updatePriceSlider();
             renderCars();
             updateResultsCount();
             
@@ -324,14 +413,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const maxYear = parseInt(maxYearInput.value) || Infinity;
         filteredCars = filteredCars.filter(car => car.year >= minYear && car.year <= maxYear);
         
-        const selectedBrands = getSelectedValues(brandFilters);
-        if (selectedBrands.length > 0) {
-            filteredCars = filteredCars.filter(car => selectedBrands.includes(car.brand));
+        const selectedDealers = getSelectedValues(dealerFiltersContainer.querySelectorAll('input[type="checkbox"]'));
+        if (selectedDealers.length > 0) {
+            const dealerIds = selectedDealers.map(id => parseInt(id));
+            filteredCars = filteredCars.filter(car => dealerIds.includes(car.dealer_id));
         }
         
-        const selectedBodyTypes = getSelectedValues(bodyTypeFilters);
+        const selectedBodyTypes = getSelectedValues(bodyTypeFiltersContainer.querySelectorAll('input[type="checkbox"]'));
         if (selectedBodyTypes.length > 0) {
-            filteredCars = filteredCars.filter(car => selectedBodyTypes.includes(car.type));
+            filteredCars = filteredCars.filter(car => {
+                const carType = car.type || car.vehicle_type || car.type_name;
+                return selectedBodyTypes.includes(carType);
+            });
         }
         
         sortCars();
@@ -378,8 +471,13 @@ document.addEventListener("DOMContentLoaded", function () {
         minYearInput.value = '';
         maxYearInput.value = '';
         
-        brandFilters.forEach(checkbox => checkbox.checked = false);
-        bodyTypeFilters.forEach(checkbox => checkbox.checked = false);
+        if (priceSlider) {
+            priceSlider.value = maxPrice;
+            updateSliderValue();
+        }
+        
+        dealerFiltersContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+        bodyTypeFiltersContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
         sortSelect.value = 'default';
         
         applyFilters();

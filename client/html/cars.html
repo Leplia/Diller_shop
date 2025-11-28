@@ -10,12 +10,12 @@
     <link rel="stylesheet" href="/client/assets/css/main.css">
     <link rel="stylesheet" href="/client/assets/css/cars.css">
     
-    <title>Каталог автомобилей | MaxWheels</title>
+    <title>Каталог автомобилей | MatizWheels</title>
 </head>
 <body>
     <header class="header">
         <div id="menu-btn" class="fas fa-bars"></div>
-        <a href="/client/html/main.html" class="logo"> <span>max</span>wheels </a>
+        <a href="/client/html/main.html" class="logo"> <span>Matiz</span>wheels </a>
         
         <nav class="navbar">
             <a href="/client/html/main.html#home">Главная</a>
@@ -54,27 +54,21 @@
                 <h3>Цена</h3>
                 <div class="price-range">
                     <div class="range-inputs">
-                        <input type="number" id="min-price" placeholder="Мин">
+                        <input type="number" id="min-price" placeholder="Мин" min="0">
                         <span>-</span>
-                        <input type="number" id="max-price" placeholder="Макс">
+                        <input type="number" id="max-price" placeholder="Макс" min="0">
                     </div>
                     <div class="range-slider">
-                        <input type="range" id="price-slider" min="0" max="200000" value="200000">
+                        <input type="range" id="price-slider" min="0" max="500000" value="500000" step="1000">
+                        <div class="slider-value" id="slider-value">До 500000 $</div>
                     </div>
                 </div>
             </div>
             
             <div class="filter-group">
-                <h3>Марка</h3>
-                <div class="brand-filters">
-                    <label><input type="checkbox" value="Toyota"> Toyota</label>
-                    <label><input type="checkbox" value="BMW"> BMW</label>
-                    <label><input type="checkbox" value="Mercedes"> Mercedes</label>
-                    <label><input type="checkbox" value="Audi"> Audi</label>
-                    <label><input type="checkbox" value="Honda"> Honda</label>
-                    <label><input type="checkbox" value="Ford"> Ford</label>
-                    <label><input type="checkbox" value="Nissan"> Nissan</label>
-                    <label><input type="checkbox" value="Volkswagen"> Volkswagen</label>
+                <h3>Дилер</h3>
+                <div class="dealer-filters" id="dealer-filters">
+                    <!-- Дилеры будут загружены через JavaScript -->
                 </div>
             </div>
             
@@ -91,13 +85,8 @@
             
             <div class="filter-group">
                 <h3>Тип кузова</h3>
-                <div class="body-type-filters">
-                    <label><input type="checkbox" value="Седан"> Седан</label>
-                    <label><input type="checkbox" value="Хэтчбек"> Хэтчбек</label>
-                    <label><input type="checkbox" value="Универсал"> Универсал</label>
-                    <label><input type="checkbox" value="Внедорожник"> Внедорожник</label>
-                    <label><input type="checkbox" value="Купе"> Купе</label>
-                    <label><input type="checkbox" value="Кабриолет"> Кабриолет</label>
+                <div class="body-type-filters" id="body-type-filters">
+                    <!-- Типы кузова будут загружены через JavaScript -->
                 </div>
             </div>
             
@@ -164,7 +153,7 @@
                 <h3>Контактная информация</h3>
                 <a href="#"> <i class="fas fa-phone"></i> +123-456-7890 </a>
                 <a href="#"> <i class="fas fa-phone"></i> +111-222-3333 </a>
-                <a href="#"> <i class="fas fa-envelope"></i> info@maxwheels.com </a>
+                <a href="#"> <i class="fas fa-envelope"></i> info@matizwheels.com </a>
                 <a href="#"> <i class="fas fa-map-marker-alt"></i> Москва, Россия </a>
             </div>
             

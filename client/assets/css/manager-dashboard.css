@@ -591,4 +591,309 @@ body {
   margin-bottom: 0.4rem;
 }
 
+/* Стили для заявок */
+#orders-list {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.order-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--mgr-accent);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.order-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.order-id {
+  font-weight: 600;
+  color: var(--mgr-text);
+  font-size: 1rem;
+}
+
+.order-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.order-status.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.order-status.status-confirmed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.order-status.status-shipped {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.order-status.status-delivered {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.order-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.order-status.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.order-date {
+  font-size: 0.8rem;
+  color: var(--mgr-muted);
+}
+
+.order-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-user,
+.order-car {
+  font-size: 0.9rem;
+  color: var(--mgr-text);
+}
+
+.order-payment {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--mgr-border);
+  font-size: 0.85rem;
+  color: var(--mgr-muted);
+}
+
+.order-payment strong {
+  color: var(--mgr-text);
+}
+
+/* Стили для тест-драйвов */
+#test-drives-list {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.test-drive-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #3b82f6;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.test-drive-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.test-drive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.test-drive-id {
+  font-weight: 600;
+  color: var(--mgr-text);
+  font-size: 1rem;
+}
+
+.test-drive-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.test-drive-status.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.test-drive-status.status-confirmed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.test-drive-status.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.test-drive-status.status-completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.test-drive-date {
+  font-size: 0.8rem;
+  color: var(--mgr-muted);
+}
+
+.test-drive-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.test-drive-user,
+.test-drive-car {
+  font-size: 0.9rem;
+  color: var(--mgr-text);
+}
+
+.test-drive-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Стили для форм управления дилерами и типами */
+.entity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid var(--mgr-border);
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.entity-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 150px;
+  flex: 1;
+}
+
+.entity-form .field label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mgr-muted);
+  font-weight: 600;
+}
+
+.entity-form .field input {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.entity-form .field input:focus {
+  border-color: var(--mgr-accent);
+  box-shadow: 0 0 0 2px rgba(249, 216, 6, 0.2);
+}
+
+.entity-form .field.buttons {
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: row;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+/* Адаптивность для новых элементов */
+@media (max-width: 768px) {
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-status {
+    align-self: flex-start;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .entity-form .field {
+    min-width: 100%;
+  }
+}
+
 

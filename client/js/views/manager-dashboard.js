@@ -21,9 +21,476 @@ document.addEventListener('DOMContentLoaded', () => {
   let vehicleTypes = [];
 
   initAuthHeader();
+  
+  // Определяем функции перед их вызовом
+  async function loadOrders() {
+    try {
+      const res = await fetch(`${API_BASE}/orders`);
+      if (!res.ok) throw new Error('Ошибка загрузки заявок');
+      const orders = await res.json();
+
+      const ordersList = document.getElementById('orders-list');
+      if (!ordersList) return;
+
+      if (orders.length === 0) {
+        ordersList.innerHTML = '<p>Нет заявок</p>';
+        return;
+      }
+
+      ordersList.innerHTML = orders.map(order => createOrderItem(order)).join('');
+
+      // Добавляем обработчики для кнопок подтверждения и отклонения
+      ordersList.querySelectorAll('.confirm-order').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm(`Подтвердить заявку #${id}?`)) return;
+          try {
+            const res = await fetch(`${API_BASE}/orders/${id}/status`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'confirmed' })
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Ошибка при подтверждении заявки');
+            }
+            await loadOrders();
+            alert('Заявка успешно подтверждена!');
+          } catch (error) {
+            console.error(error);
+            alert(error.message);
+          }
+        });
+      });
+
+      ordersList.querySelectorAll('.cancel-order').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm(`Отклонить заявку #${id}?`)) return;
+          try {
+            const res = await fetch(`${API_BASE}/orders/${id}/status`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'cancelled' })
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Ошибка при отклонении заявки');
+            }
+            await loadOrders();
+            alert('Заявка успешно отклонена!');
+          } catch (error) {
+            console.error(error);
+            alert(error.message);
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Ошибка загрузки заявок:', error);
+      const ordersList = document.getElementById('orders-list');
+      if (ordersList) {
+        ordersList.innerHTML = '<p>Ошибка загрузки заявок</p>';
+      }
+    }
+  }
+
+  function createOrderItem(order) {
+    const date = new Date(order.order_date).toLocaleString('ru-RU');
+    const paymentInfo = order.payment_amount 
+      ? `<div class="order-payment">
+           <strong>Оплата:</strong> ${new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'USD' }).format(order.payment_amount)} 
+           (${getPaymentMethodText(order.payment_method)}, ${getPaymentStatusText(order.payment_status)})
+         </div>`
+      : '<div class="order-payment"><em>Оплата не произведена</em></div>';
+
+    const canConfirm = order.status === 'pending';
+    const canCancel = order.status === 'pending' || order.status === 'confirmed';
+
+    return `
+      <div class="order-item">
+        <div class="order-header">
+          <span class="order-id">Заявка #${order.id}</span>
+          <span class="order-status status-${order.status}">${getOrderStatusText(order.status)}</span>
+          <span class="order-date">${date}</span>
+        </div>
+        <div class="order-details">
+          <div class="order-user">
+            <strong>Клиент:</strong> ${order.user_name || 'Не указан'} (${order.user_email || 'Не указан'})
+          </div>
+          <div class="order-car">
+            <strong>Автомобиль:</strong> ${order.brand} ${order.model} (${order.year}) - ${new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'USD' }).format(order.price)}
+          </div>
+          ${paymentInfo}
+        </div>
+        <div class="order-actions">
+          ${canConfirm ? `<button class="btn btn-small btn-success confirm-order" data-id="${order.id}">Подтвердить</button>` : ''}
+          ${canCancel ? `<button class="btn btn-small btn-danger cancel-order" data-id="${order.id}">Отклонить</button>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function getOrderStatusText(status) {
+    const statusMap = {
+      'pending': 'В ожидании',
+      'confirmed': 'Подтверждён',
+      'shipped': 'Отправлен',
+      'delivered': 'Доставлен',
+      'cancelled': 'Отменён'
+    };
+    return statusMap[status] || status;
+  }
+
+  function getPaymentMethodText(method) {
+    const methodMap = {
+      'card': 'Карта',
+      'cash': 'Наличные',
+      'bank_transfer': 'Банковский перевод'
+    };
+    return methodMap[method] || method;
+  }
+
+  function getPaymentStatusText(status) {
+    const statusMap = {
+      'pending': 'В ожидании',
+      'paid': 'Оплачено',
+      'failed': 'Ошибка'
+    };
+    return statusMap[status] || status;
+  }
+
+  async function loadDealers() {
+    const dealersTableBody = document.querySelector('#dealers-table tbody');
+    if (!dealersTableBody) return;
+    
+    try {
+      const res = await fetch(`${API_BASE}/dealers`);
+      if (!res.ok) throw new Error('Ошибка загрузки дилеров');
+      const dealers = await res.json();
+
+      dealersTableBody.innerHTML = '';
+      dealers.forEach(dealer => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${dealer.id}</td>
+          <td>${dealer.name}</td>
+          <td>${dealer.address || '-'}</td>
+          <td>${dealer.phone || '-'}</td>
+          <td>${dealer.email || '-'}</td>
+          <td>
+            <button class="btn btn-small btn-danger delete-dealer" data-id="${dealer.id}">Удалить</button>
+          </td>
+        `;
+        dealersTableBody.appendChild(tr);
+      });
+
+      dealersTableBody.querySelectorAll('.delete-dealer').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm(`Удалить дилера #${id}?`)) return;
+          try {
+            const res = await fetch(`${API_BASE}/dealers/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Ошибка при удалении дилера');
+            }
+            await loadDealers();
+            await loadDealersAndTypes();
+            alert('Дилер успешно удалён!');
+          } catch (error) {
+            console.error(error);
+            alert(error.message);
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Ошибка загрузки дилеров:', error);
+      if (dealersTableBody) {
+        dealersTableBody.innerHTML = '<tr><td colspan="6">Ошибка загрузки дилеров</td></tr>';
+      }
+    }
+  }
+
+  async function loadVehicleTypes() {
+    const vehicleTypesTableBody = document.querySelector('#vehicle-types-table tbody');
+    if (!vehicleTypesTableBody) return;
+    
+    try {
+      const res = await fetch(`${API_BASE}/vehicle-types`);
+      if (!res.ok) throw new Error('Ошибка загрузки типов кузова');
+      const types = await res.json();
+
+      vehicleTypesTableBody.innerHTML = '';
+      types.forEach(type => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${type.id}</td>
+          <td>${type.type_name}</td>
+          <td>
+            <button class="btn btn-small btn-danger delete-vehicle-type" data-id="${type.id}">Удалить</button>
+          </td>
+        `;
+        vehicleTypesTableBody.appendChild(tr);
+      });
+
+      vehicleTypesTableBody.querySelectorAll('.delete-vehicle-type').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm(`Удалить тип кузова #${id}?`)) return;
+          try {
+            const res = await fetch(`${API_BASE}/vehicle-types/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Ошибка при удалении типа кузова');
+            }
+            await loadVehicleTypes();
+            await loadDealersAndTypes();
+            alert('Тип кузова успешно удалён!');
+          } catch (error) {
+            console.error(error);
+            alert(error.message);
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Ошибка загрузки типов кузова:', error);
+      if (vehicleTypesTableBody) {
+        vehicleTypesTableBody.innerHTML = '<tr><td colspan="3">Ошибка загрузки типов кузова</td></tr>';
+      }
+    }
+  }
+
+  // Управление дилерами
+  const dealerForm = document.getElementById('dealer-form');
+  dealerForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const nameInput = document.getElementById('dealer-name');
+    const addressInput = document.getElementById('dealer-address');
+    const phoneInput = document.getElementById('dealer-phone');
+    const emailInput = document.getElementById('dealer-email');
+
+    const dealerData = {
+      name: nameInput.value.trim(),
+      address: addressInput.value.trim() || null,
+      phone: phoneInput.value.trim() || null,
+      email: emailInput.value.trim() || null
+    };
+
+    if (!dealerData.name) {
+      alert('Пожалуйста, укажите название дилера');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/dealers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dealerData)
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Ошибка при добавлении дилера');
+      }
+
+      dealerForm.reset();
+      await loadDealers();
+      await loadDealersAndTypes();
+      alert('Дилер успешно добавлен!');
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+  });
+
+  // Управление типами кузова
+  const vehicleTypeForm = document.getElementById('vehicle-type-form');
+  vehicleTypeForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const nameInput = document.getElementById('vehicle-type-name');
+    const typeData = {
+      type_name: nameInput.value.trim()
+    };
+
+    if (!typeData.type_name) {
+      alert('Пожалуйста, укажите название типа кузова');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/vehicle-types`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(typeData)
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Ошибка при добавлении типа кузова');
+      }
+
+      vehicleTypeForm.reset();
+      await loadVehicleTypes();
+      await loadDealersAndTypes();
+      alert('Тип кузова успешно добавлен!');
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+  });
+
+  // Функции для работы с тест-драйвами
+  async function loadTestDrives() {
+    try {
+      const res = await fetch(`${API_BASE}/test-drives`);
+      if (!res.ok) throw new Error('Ошибка загрузки тест-драйвов');
+      const testDrives = await res.json();
+
+      const testDrivesList = document.getElementById('test-drives-list');
+      if (!testDrivesList) return;
+
+      if (testDrives.length === 0) {
+        testDrivesList.innerHTML = '<p>Нет записей на тест-драйвы</p>';
+        return;
+      }
+
+      testDrivesList.innerHTML = testDrives.map(td => createTestDriveItem(td)).join('');
+
+      // Добавляем обработчики для кнопок управления
+      testDrivesList.querySelectorAll('.confirm-test-drive').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm(`Подтвердить тест-драйв #${id}?`)) return;
+          try {
+            const res = await fetch(`${API_BASE}/test-drives/${id}/status`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'confirmed' })
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Ошибка при подтверждении тест-драйва');
+            }
+            await loadTestDrives();
+            alert('Тест-драйв успешно подтверждён!');
+          } catch (error) {
+            console.error(error);
+            alert(error.message);
+          }
+        });
+      });
+
+      testDrivesList.querySelectorAll('.cancel-test-drive').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm(`Отклонить тест-драйв #${id}?`)) return;
+          try {
+            const res = await fetch(`${API_BASE}/test-drives/${id}/status`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'cancelled' })
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Ошибка при отклонении тест-драйва');
+            }
+            await loadTestDrives();
+            alert('Тест-драйв успешно отклонён!');
+          } catch (error) {
+            console.error(error);
+            alert(error.message);
+          }
+        });
+      });
+
+      testDrivesList.querySelectorAll('.complete-test-drive').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm(`Закрыть тест-драйв #${id} (тест-драйв проведён)?`)) return;
+          try {
+            const res = await fetch(`${API_BASE}/test-drives/${id}/status`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'completed' })
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Ошибка при закрытии тест-драйва');
+            }
+            await loadTestDrives();
+            alert('Тест-драйв успешно закрыт!');
+          } catch (error) {
+            console.error(error);
+            alert(error.message);
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Ошибка загрузки тест-драйвов:', error);
+      const testDrivesList = document.getElementById('test-drives-list');
+      if (testDrivesList) {
+        testDrivesList.innerHTML = '<p>Ошибка загрузки тест-драйвов</p>';
+      }
+    }
+  }
+
+  function createTestDriveItem(testDrive) {
+    const date = new Date(testDrive.scheduled_date).toLocaleString('ru-RU');
+    const statusText = getTestDriveStatusText(testDrive.status);
+    const statusClass = `status-${testDrive.status}`;
+
+    const canConfirm = testDrive.status === 'pending';
+    const canCancel = testDrive.status === 'pending' || testDrive.status === 'confirmed';
+    const canComplete = testDrive.status === 'confirmed';
+
+    return `
+      <div class="test-drive-item">
+        <div class="test-drive-header">
+          <span class="test-drive-id">Тест-драйв #${testDrive.id}</span>
+          <span class="test-drive-status ${statusClass}">${statusText}</span>
+          <span class="test-drive-date">${date}</span>
+        </div>
+        <div class="test-drive-details">
+          <div class="test-drive-user">
+            <strong>Клиент:</strong> ${testDrive.user_name || 'Не указан'} (${testDrive.user_email || 'Не указан'})
+          </div>
+          <div class="test-drive-car">
+            <strong>Автомобиль:</strong> ${testDrive.brand} ${testDrive.model} (${testDrive.year}) - ${new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'USD' }).format(testDrive.price)}
+          </div>
+        </div>
+        <div class="test-drive-actions">
+          ${canConfirm ? `<button class="btn btn-small btn-success confirm-test-drive" data-id="${testDrive.id}">Подтвердить</button>` : ''}
+          ${canCancel ? `<button class="btn btn-small btn-danger cancel-test-drive" data-id="${testDrive.id}">Отклонить</button>` : ''}
+          ${canComplete ? `<button class="btn btn-small btn-primary complete-test-drive" data-id="${testDrive.id}">Закрыть</button>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function getTestDriveStatusText(status) {
+    const statusMap = {
+      'pending': 'В ожидании',
+      'confirmed': 'Подтверждён',
+      'cancelled': 'Отменён',
+      'completed': 'Проведён'
+    };
+    return statusMap[status] || status;
+  }
+
+  // Вызываем функции загрузки
   loadDealersAndTypes();
   loadCars();
   loadFAQ();
+  
+  // Загружаем списки с небольшой задержкой, чтобы убедиться, что DOM полностью готов
+  setTimeout(() => {
+    loadOrders();
+    loadDealers();
+    loadVehicleTypes();
+    loadTestDrives();
+  }, 100);
 
   cancelEditBtn?.addEventListener('click', () => {
     resetForm();

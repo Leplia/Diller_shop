@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         
         // Обработчики кнопок
-        document.getElementById('order-btn').addEventListener('click', () => handleOrder(car.id));
+        document.getElementById('order-btn').addEventListener('click', () => handleOrder(car));
         document.getElementById('test-drive-btn').addEventListener('click', () => handleTestDrive(car.id));
         
         carDetailsEl.style.display = 'block';
@@ -177,36 +177,257 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     // Обработка заказа
-    async function handleOrder(carId) {
+    async function handleOrder(car) {
+        const carId = car.id;
         if (!isUserLoggedIn) {
             if (confirm('Для оформления заказа необходимо войти в систему. Перейти на страницу входа?')) {
                 window.location.href = '/client/html/Login-Register.html';
             }
             return;
         }
-        
-        try {
-            const response = await fetch(`${API_BASE}/orders`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    car_id: carId,
-                    user_id: currentUser.id
-                })
-            });
-            
-            if (!response.ok) {
-                const error = await response.json().catch(() => ({}));
-                throw new Error(error.error || 'Ошибка при создании заказа');
+
+        showOrderModal(car);
+    }
+
+    // Модальное окно подтверждения заказа
+    function showOrderModal(car) {
+        const modal = document.createElement('div');
+        modal.className = 'order-modal';
+
+        const formattedPrice = new Intl.NumberFormat('ru-RU', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(car.price);
+
+        const etaDate = new Date();
+        etaDate.setDate(etaDate.getDate() + 5);
+        const estimatedDelivery = etaDate.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long'
+        });
+
+        modal.innerHTML = `
+            <div class="modal-content order-modal-content">
+                <div class="modal-header">
+                    <h3>Подтверждение заказа</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="order-highlight">
+                        <p>Пожалуйста, проверьте детали заказа перед оплатой. После подтверждения мы закрепим автомобиль за вами и свяжемся для финализации сделки.</p>
+                    </div>
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Автомобиль</span>
+                            <strong>${car.brand} ${car.model} (${car.year})</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Стоимость</span>
+                            <strong>${formattedPrice}</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Дилер</span>
+                            <strong>${car.dealer?.name || 'Уточняется'}</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Контакты дилера</span>
+                            <strong>${car.dealer?.phone || '—'} / ${car.dealer?.email || '—'}</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Ориентировочная выдача</span>
+                            <strong>до ${estimatedDelivery}</strong>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Способ оплаты</label>
+                        <div class="payment-methods">
+                            <label class="payment-option">
+                                <input type="radio" name="payment-method" value="card" checked>
+                                <span>
+                                    <strong>Банковская карта</strong>
+                                    <small>Instant</small>
+                                </span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment-method" value="cash">
+                                <span>
+                                    <strong>Наличные</strong>
+                                    <small>В дилерском центре</small>
+                                </span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment-method" value="bank_transfer">
+                                <span>
+                                    <strong>Банковский перевод</strong>
+                                    <small>до 1 рабочего дня</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="order-extra-info">
+                        <h4>Что входит в заказ</h4>
+                        <ul>
+                            <li>Предпродажная подготовка и диагностика автомобиля</li>
+                            <li>Комплект сезонной резины при оплате картой</li>
+                            <li>Персональный менеджер и сопровождение оформления</li>
+                            <li>Бесплатное хранение на складе до 10 дней</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancel-order-btn">Отмена</button>
+                    <button class="btn btn-primary" id="confirm-order-btn">
+                        Подтвердить и оплатить
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const closeModal = () => {
+            document.body.removeChild(modal);
+        };
+
+        modal.querySelector('.modal-close').addEventListener('click', closeModal);
+        modal.querySelector('#cancel-order-btn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
             }
-            
-            // Показываем модальное окно для отзыва
-            showReviewModal(carId);
-        } catch (error) {
-            console.error('Ошибка при оформлении заказа:', error);
-            alert('Ошибка при оформлении заказа: ' + error.message);
+        });
+
+        const confirmBtn = modal.querySelector('#confirm-order-btn');
+        let isProcessing = false;
+
+        confirmBtn.addEventListener('click', async () => {
+            if (isProcessing) return;
+
+            const selectedMethod = modal.querySelector('input[name="payment-method"]:checked')?.value;
+            if (!selectedMethod) {
+                alert('Пожалуйста, выберите способ оплаты');
+                return;
+            }
+
+            isProcessing = true;
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Оформляем...';
+
+            try {
+                const orderResponse = await fetch(`${API_BASE}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        car_id: car.id,
+                        user_id: currentUser.id
+                    })
+                });
+
+                if (!orderResponse.ok) {
+                    const error = await orderResponse.json().catch(() => ({}));
+                    throw new Error(error.error || 'Ошибка при создании заказа');
+                }
+
+                const order = await orderResponse.json();
+
+                const paymentResponse = await fetch(`${API_BASE}/payments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        order_id: order.id,
+                        method: selectedMethod
+                    })
+                });
+
+                if (!paymentResponse.ok) {
+                    const error = await paymentResponse.json().catch(() => ({}));
+                    throw new Error(error.error || 'Ошибка при оплате заказа');
+                }
+
+                const payment = await paymentResponse.json();
+
+                showOrderSuccess(modal, order, payment, car);
+            } catch (error) {
+                console.error('Ошибка при оформлении заказа:', error);
+                alert('Ошибка при оформлении заказа: ' + error.message);
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Подтвердить и оплатить';
+                isProcessing = false;
+            }
+        });
+    }
+
+    function showOrderSuccess(modal, order, payment, car) {
+        const modalBody = modal.querySelector('.modal-body');
+        const modalFooter = modal.querySelector('.modal-footer');
+
+        const paymentDate = new Date(payment.payment_date).toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const formattedAmount = new Intl.NumberFormat('ru-RU', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(payment.amount);
+
+        modalBody.innerHTML = `
+            <div class="order-success">
+                <h3>Заказ подтверждён!</h3>
+                <p>Номер заказа <strong>#${order.id}</strong></p>
+                <div class="success-grid">
+                    <div>
+                        <span>Автомобиль</span>
+                        <strong>${car.brand} ${car.model}</strong>
+                    </div>
+                    <div>
+                        <span>Сумма оплаты</span>
+                        <strong>${formattedAmount}</strong>
+                    </div>
+                    <div>
+                        <span>Способ оплаты</span>
+                        <strong>${translateMethod(payment.method)}</strong>
+                    </div>
+                    <div>
+                        <span>Время оплаты</span>
+                        <strong>${paymentDate}</strong>
+                    </div>
+                </div>
+                <p class="success-note">Менеджер свяжется с вами в ближайшее время для уточнения выдачи автомобиля и дополнительных услуг.</p>
+            </div>
+        `;
+
+        modalFooter.innerHTML = `
+            <button class="btn btn-secondary" id="close-success-modal">Закрыть</button>
+            <button class="btn btn-primary" id="leave-review-btn">Оставить отзыв</button>
+        `;
+
+        modal.querySelector('#close-success-modal').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+
+        modal.querySelector('#leave-review-btn').addEventListener('click', () => {
+            document.body.removeChild(modal);
+            showReviewModal(car.id);
+        });
+    }
+
+    function translateMethod(method) {
+        switch (method) {
+            case 'card':
+                return 'Банковская карта';
+            case 'cash':
+                return 'Наличные';
+            case 'bank_transfer':
+                return 'Банковский перевод';
+            default:
+                return method;
         }
     }
     

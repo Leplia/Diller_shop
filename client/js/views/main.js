@@ -386,55 +386,28 @@ window.addEventListener("DOMContentLoaded", () => {
         adminLinkHtml = `<button id="go-to-admin" class="btn">Панель системного администратора</button>`;
       }
 
-      userInfoBlock.innerHTML = `
-        <div class="user-avatar" id="user-avatar-clickable" style="cursor: pointer;">
-          <img src="/client/assets/img/default.png" alt="Аватар" />
-        </div>
-        <div class="user-name">Привет, ${user.name}!</div>
-        ${adminLinkHtml}
-        <button id="logout-btn" class="btn">Выйти</button>
-      `;
-      
-      // Добавляем стили для кнопок админ-панели
-      const style = document.createElement('style');
-      style.textContent = `
-        #user-info {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          flex-wrap: wrap;
-        }
-        #user-info .user-avatar {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          overflow: hidden;
-          flex-shrink: 0;
-          border: 2px solid var(--yellow, #f9d806);
-        }
-        #user-info .user-avatar img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        #user-info .user-name {
-          font-size: 1.4rem;
-          white-space: nowrap;
-        }
-        #go-to-admin {
-          padding: 0.5rem 1rem;
-          font-size: 1.2rem;
-        }
-        #logout-btn {
-          padding: 0.5rem 1rem;
-          font-size: 1.2rem;
-          white-space: nowrap;
-        }
-      `;
-      if (!document.getElementById('user-info-styles')) {
-        style.id = 'user-info-styles';
-        document.head.appendChild(style);
+      // Для менеджера и сисадмина оборачиваем всё в черный блок
+      if (isManager || isSysAdmin) {
+        userInfoBlock.innerHTML = `
+          <div class="user-info-content">
+            <div class="user-avatar" id="user-avatar-clickable" style="cursor: pointer;">
+              <img src="/client/assets/img/default.png" alt="Аватар" />
+            </div>
+            <div class="user-name">Привет, ${user.name}!</div>
+            ${adminLinkHtml}
+            <button id="logout-btn" class="btn">Выйти</button>
+          </div>
+        `;
+      } else {
+        userInfoBlock.innerHTML = `
+          <div class="user-avatar" id="user-avatar-clickable" style="cursor: pointer;">
+            <img src="/client/assets/img/default.png" alt="Аватар" />
+          </div>
+          <div class="user-name">Привет, ${user.name}!</div>
+        `;
       }
+      
+      // Стили уже определены в main.css, дополнительные стили не нужны
     }
 
     // Обработка выхода
